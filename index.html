@@ -1,0 +1,39 @@
+<html>
+<hes>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Best places to go in San Francisco</title>
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="./css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div id="wrapper">
+        <div id="sidebar-wrapper">
+            <h1 class="title">Places to go in San Francisco</h1>
+                <ul style=" "data-bind="foreach: markers">
+                    <li><a data-bind="text: title, click: $parent.selectMarker"></a></li>
+                </ul>
+            <hr>
+            <ul class="sidebar-nav" id="sidebar-nav"></ul>
+        </div>
+        <div id="map"></div>
+
+
+    </div>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL8gNy9ObPAHD6wUrtKVZ_do05gJbezaQ&callback=initMap"></script>
+    <!--JQuery-->
+    <script src="js/jquery.js"></script>
+
+    <!--Bower Libraries-->
+    <script src= 'bower_components/knockout/dist/knockout.js'></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+    <!--Local project files-->
+    <script src= 'js/map.js'></script>
+
+</body>
+</html>
