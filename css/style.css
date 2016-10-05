@@ -35,11 +35,6 @@ h2 {
     z-index: 0;
 }
 
-#hide-listings, #show-listings {
-    width: 46%;
-    margin-left: 5px;
-}
-
 .content {
     text-align: left;
 }

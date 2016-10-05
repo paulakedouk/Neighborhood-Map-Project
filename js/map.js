@@ -104,6 +104,7 @@ var ViewModel = function() {
             content: content,
             visible: visible,
             link: link,
+            show: ko.observable(true),
             icon: imageMarker,
             animation: google.maps.Animation.DROP,
             id: i
@@ -132,58 +133,9 @@ var ViewModel = function() {
         }
     };
 
-    self.makeMarkerBounce = function() {
-        for (var i = 0; i < self.markers.length; i++) {
-            self.markers[i].setAnimation(google.maps.Animation.BOUNCE);
-            setTimeout(function(){
-                for(i = 0; i < self.markers.length; i++) {
-                    self.markers[i].setAnimation(null);
-                }
-            }, 700);
-        }
-    };
-
-    self.selectMarker = function(location) {
-        if (places.visible) {
-            infowindow.open(map, location);
-            self.places = ko.observableArray(places);
-
-            infowindow.setContent("<img class='imageinfo' src=" + places.image + ">" + '<h2>' + places.title + '</h2>' + '<div class="content">' + places.content + '</div>' + '<a href=" '+ places.link +' " >More info</a>');
-            location.setAnimation(google.maps.Animation.BOUNCE);
-            setTimeout(function(){
-                for(i = 0; i < self.markers.length; i++) {
-                    places.setAnimation(null);
-                }
-            }, 700);
-        }
-
-    ko.applyBindings(self.selectMarker());
-    };
-
-
-    self.addMarker = function() {
-        infowindow.close();
-        for (var i = 0; i < self.markers.length; i++) {
-            self.markers[i].setVisible(true);
-            self.markers[i].show(true);
-            self.markers[i].setAnimation(google.maps.Animation.BOUNCE);
-            setTimeout(function(){
-                for(i = 0; i < self.markers.length; i++) {
-                    self.markers[i].setAnimation(null);
-                }
-            }, 700);
-        }
-    };
-
-    // This function will loop through the markers array and display them all.
-    self.showListings = function() {
-        var bounds = new google.maps.LatLngBounds();
-        // Extend the boundaries of the map for each marker and display the marker
-        for (var i = 0; i < self.markers.length; i++) {
-          self.markers[i].setMap(map);
-          bounds.extend(self.markers[i].location);
-        }
-        map.fitBounds(bounds);
+    self.selectMarker = function() {
+        console.log('gest');
     };
 };
+
 
