@@ -67,7 +67,9 @@ function initMap() {
         mapTypeId: google.maps.MapTypeId.TERRAIN
     });
 
-    infowindow = new google.maps.InfoWindow();
+    infowindow = new google.maps.InfoWindow({
+        maxWidth: 200
+    });
 
     /*
     // Definition of a place
@@ -103,10 +105,6 @@ var ViewModel = function() {
 
     imageMarker = 'img/marker.png';
 
-    var sizeInfowindow = new google.maps.InfoWindow({
-            maxWidth: 200
-        });
-
     for (var i = 0; i < places.length; i++){
         // Get the position from the location array
         var position = places[i].location;
@@ -134,7 +132,7 @@ var ViewModel = function() {
         self.markers.push(marker);
 
         marker.addListener('click', function() {
-            self.showInfoWindow(this, sizeInfowindow);
+            self.showInfoWindow(this, infowindow);
             this.setAnimation(google.maps.Animation.BOUNCE);
             // 'mark' now refers to 'this' in this context.
             var mark = this;
@@ -144,6 +142,8 @@ var ViewModel = function() {
         });
     }
 
+
+
     // Click on list and open infowindows
     this.setPlace = function(clickedMarker) {
         self.currentAttraction(clickedMarker);
@@ -151,18 +151,18 @@ var ViewModel = function() {
         console.log('test');
     };
 
-    self.showInfoWindow = function(marker, sizeInfowindow) {
+    self.showInfoWindow = function(marker, infowindow) {
         // Check to make sure the infowindow is not already opened on this marker.
-        if (sizeInfowindow.marker != marker) {
-            sizeInfowindow.marker = marker;
+        if (infowindow.marker != marker) {
+            infowindow.marker = marker;
             // Infowindow layout was taken and modified from GauthamRajesh on GitHub
-            sizeInfowindow.setContent("<img class='imageinfo' src=" + marker.image + ">" + '<h2>' + marker.title + '</h2>' + '<div class="content">' + marker.content + '</div>' + '<a href=" '+ marker.link +' " >More info</a>');
-            sizeInfowindow.open(map, marker);
-            sizeInfowindow.marker.setAnimation(google.maps.Animation.BOUNCE);
+            infowindow.setContent("<img class='imageinfo' src=" + marker.image + ">" + '<h2>' + marker.title + '</h2>' + '<div class="content">' + marker.content + '</div>' + '<a href=" '+ marker.link +' " >More info</a>');
+            infowindow.open(map, marker);
+            infowindow.marker.setAnimation(google.maps.Animation.BOUNCE);
 
-            sizeInfowindow.addListener('closeclick', function() {
+            infowindow.addListener('closeclick', function() {
             marker.setAnimation(null);
-            sizeInfowindow.marker = null;
+            infowindow.marker = null;
             });
         }
     };
