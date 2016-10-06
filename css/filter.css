@@ -1,0 +1,43 @@
+#container {
+    width: 30px;
+}
+/*- -*/
+/*- FILTER OPTIONS -*/
+ul#filterOptions {
+    width: 802px;
+    height: 52px;
+    margin: 30px 0;
+    overflow: hidden;
+}
+ul#filterOptions li { height: 52px; margin-right: 2px; float: left; }
+ul#filterOptions li a {
+    height: 50px;
+    padding: 0 20px;
+    border: 1px solid #999;
+    background: #cfcfcf;
+    color: #fff;
+    font-weight: bold;
+    line-height: 50px;
+    text-decoration: none;
+    display: block;
+}
+ul#filterOptions li a:hover { background: #c9c9c9; }
+ul#filterOptions li.active a { background: #999; }
+/*- -*/
+/*- OUR DATA HOLDER -*/
+#ourHolder {
+    width: 800px;
+    height: 850px;
+    overflow: hidden;
+}
+#ourHolder div.item {
+    width: 200px;
+    height: 200px;
+    float: left;
+    text-align: center;
+}
+#ourHolder div.item h3 {
+    margin-top: 10px;
+    font-size: 16px;
+    line-height: 20px;
+}

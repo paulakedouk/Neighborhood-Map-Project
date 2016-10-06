@@ -31,7 +31,7 @@ var places = [
         visible: true
     }];
 
-var map, infowindow;
+var map;
 
 // Initiate the map
 function initMap() {
@@ -68,7 +68,18 @@ function initMap() {
     });
 
     infowindow = new google.maps.InfoWindow();
-    // Tried putting this in app.js but but received and error in console.
+
+    /*
+    // Definition of a place
+    var Place = function(data) {
+      this.title = ko.observable(data.title);
+      this.content = ko.observable(data.content);
+      this.location = ko.observable(data.location);
+      this.image = ko.observable(data.image);
+      this.link = ko.observable(data.link);
+      this.visible = ko.observable(data.visible);
+    };*/
+
     ko.applyBindings(new ViewModel());
 }
 
@@ -79,7 +90,16 @@ var ViewModel = function() {
 
     this.markers = [];
 
-    self.touristicAttractions = ko.observableArray(places);
+    this.touristicAttractions = ko.observable(places);
+
+    this.currentAttraction = ko.observable(this.touristicAttractions()[0]);
+
+    /*
+    self.userFilter = ko.observable('');
+    // Logs current contents of user input to search box to console
+    self.writeToConsole = ko.computed(function() {
+        console.log(self.userFilter());
+    });*/
 
     imageMarker = 'img/marker.png';
 
@@ -109,33 +129,42 @@ var ViewModel = function() {
             animation: google.maps.Animation.DROP,
             id: i
         });
+
         // Push the marker to our array of markers
         self.markers.push(marker);
 
         marker.addListener('click', function() {
-            self.populateInfoWindow(this, sizeInfowindow);
-        })
-
-        marker.addListener('click', function() {
+            self.showInfoWindow(this, sizeInfowindow);
             this.setAnimation(google.maps.Animation.BOUNCE);
             // 'mark' now refers to 'this' in this context.
             var mark = this;
-            setTimeout(function(){mark.setAnimation(null); }, 700);
-        })
+            setTimeout(function(){
+                mark.setAnimation(null);
+            }, 700);
+        });
     }
 
-    self.populateInfoWindow = function(marker, infowindow) {
+    // Click on list and open infowindows
+    this.setPlace = function(clickedMarker) {
+        self.currentAttraction(clickedMarker);
+
+        console.log('test');
+    };
+
+    self.showInfoWindow = function(marker, sizeInfowindow) {
         // Check to make sure the infowindow is not already opened on this marker.
-        if (infowindow.marker != marker) {
-          infowindow.marker = marker;
-          infowindow.setContent("<img class='imageinfo' src=" + marker.image + ">" + '<h2>' + marker.title + '</h2>' + '<div class="content">' + marker.content + '</div>' + '<a href=" '+ marker.link +' " >More info</a>');
-          infowindow.open(map, marker);
+        if (sizeInfowindow.marker != marker) {
+            sizeInfowindow.marker = marker;
+            // Infowindow layout was taken and modified from GauthamRajesh on GitHub
+            sizeInfowindow.setContent("<img class='imageinfo' src=" + marker.image + ">" + '<h2>' + marker.title + '</h2>' + '<div class="content">' + marker.content + '</div>' + '<a href=" '+ marker.link +' " >More info</a>');
+            sizeInfowindow.open(map, marker);
+            sizeInfowindow.marker.setAnimation(google.maps.Animation.BOUNCE);
+
+            sizeInfowindow.addListener('closeclick', function() {
+            marker.setAnimation(null);
+            sizeInfowindow.marker = null;
+            });
         }
     };
-
-    self.selectMarker = function() {
-        console.log('gest');
-    };
 };
-
 
