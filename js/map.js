@@ -92,9 +92,7 @@ var ViewModel = function() {
 
     this.markers = [];
 
-    this.touristicAttractions = ko.observable(places);
-
-    this.currentAttraction = ko.observable(this.touristicAttractions()[0]);
+    self.touristicAttractions = ko.observableArray(places);
 
     /*
     self.userFilter = ko.observable('');
@@ -129,10 +127,13 @@ var ViewModel = function() {
         });
 
         // Push the marker to our array of markers
-        self.markers.push(marker);
+        self.touristicAttractions()[i].marker = marker;
 
         marker.addListener('click', function() {
             self.showInfoWindow(this, infowindow);
+        })
+
+        marker.addListener('click', function() {
             this.setAnimation(google.maps.Animation.BOUNCE);
             // 'mark' now refers to 'this' in this context.
             var mark = this;
@@ -142,13 +143,18 @@ var ViewModel = function() {
         });
     }
 
-
-
-    // Click on list and open infowindows
-    this.setPlace = function(clickedMarker) {
-        self.currentAttraction(clickedMarker);
-
-        console.log('test');
+    // We can access clickedMarker.marker directly for each location
+    self.setPlace = function(clickedMarker) {
+        //console.log(clickedMarker);
+        self.showInfoWindow(clickedMarker.marker, infowindow);
+        marker.addListener('click', function() {
+            this.setAnimation(google.maps.Animation.BOUNCE);
+            // 'mark' now refers to 'this' in this context.
+            var mark = this;
+            setTimeout(function(){
+                mark.setAnimation(null);
+            }, 700);
+        });
     };
 
     self.showInfoWindow = function(marker, infowindow) {
@@ -161,10 +167,15 @@ var ViewModel = function() {
             infowindow.marker.setAnimation(google.maps.Animation.BOUNCE);
 
             infowindow.addListener('closeclick', function() {
-            marker.setAnimation(null);
-            infowindow.marker = null;
+                setTimeout(function () {
+                    self.markers[i].setAnimation(null);
+                    infowindow.marker = null;
+                }, 700);
+
             });
         }
     };
+
+
 };
 
