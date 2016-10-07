@@ -1,5 +1,4 @@
 html, * {
-    padding: 0;
     margin: 0;
 }
 
@@ -91,7 +90,12 @@ h2 {
 
 /* Sidebar Styles */
 
-.sidebar-nav {
+.list-sidebar {
+    color: black;
+}
+
+.list-sidebar:hover {
+    color: red;
     position: absolute;
     margin: 0 0 0 10px;
     width: 250px;
