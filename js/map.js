@@ -142,19 +142,42 @@ var ViewModel = function() {
             }, 700);
         });
     }
+    /*
+    self.drop = function() {
+    clearMarkers();
+        for (var i = 0; i < places.length; i++) {
+        addMarkerWithTimeout(places[i], i * 200);
+        }
+    };
+
+    self.addMarkerWithTimeout = function(position, timeout) {
+        window.setTimeout(function() {
+        markers.push(new google.maps.Marker({
+          position: position,
+          map: map,
+          animation: google.maps.Animation.DROP
+        }));
+        }, timeout);
+    };
+
+    self.clearMarkers = function() {
+        for (var i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+        }
+        markers = [];
+    }*/
+
+
 
     // We can access clickedMarker.marker directly for each location
     self.setPlace = function(clickedMarker) {
         //console.log(clickedMarker);
+        for (var i = 0; i < self.touristicAttractions().length; i++) {
+            self.touristicAttractions()[i].marker.setAnimation(null);
+        }
         self.showInfoWindow(clickedMarker.marker, infowindow);
-        marker.addListener('click', function() {
-            this.setAnimation(google.maps.Animation.BOUNCE);
-            // 'mark' now refers to 'this' in this context.
-            var mark = this;
-            setTimeout(function(){
-                mark.setAnimation(null);
-            }, 700);
-        });
+
+
     };
 
     self.showInfoWindow = function(marker, infowindow) {
@@ -166,16 +189,10 @@ var ViewModel = function() {
             infowindow.open(map, marker);
             infowindow.marker.setAnimation(google.maps.Animation.BOUNCE);
 
-            infowindow.addListener('closeclick', function() {
-                setTimeout(function () {
-                    self.markers[i].setAnimation(null);
-                    infowindow.marker = null;
-                }, 700);
-
-            });
+            setTimeout(function(){
+            marker.setAnimation(null);
+            }, 700);
         }
     };
-
-
 };
 
