@@ -71,17 +71,6 @@ function initMap() {
         maxWidth: 200
     });
 
-    /*
-    // Definition of a place
-    var Place = function(data) {
-      this.title = ko.observable(data.title);
-      this.content = ko.observable(data.content);
-      this.location = ko.observable(data.location);
-      this.image = ko.observable(data.image);
-      this.link = ko.observable(data.link);
-      this.visible = ko.observable(data.visible);
-    };*/
-
     ko.applyBindings(new ViewModel());
 }
 
@@ -94,12 +83,7 @@ var ViewModel = function() {
 
     self.touristicAttractions = ko.observableArray(places);
 
-    /*
-    self.userFilter = ko.observable('');
-    // Logs current contents of user input to search box to console
-    self.writeToConsole = ko.computed(function() {
-        console.log(self.userFilter());
-    });*/
+    self.filter = ko.observable('');
 
     imageMarker = 'img/marker.png';
 
@@ -142,32 +126,14 @@ var ViewModel = function() {
             }, 700);
         });
     }
-    /*
-    self.drop = function() {
-    clearMarkers();
-        for (var i = 0; i < places.length; i++) {
-        addMarkerWithTimeout(places[i], i * 200);
-        }
-    };
 
-    self.addMarkerWithTimeout = function(position, timeout) {
-        window.setTimeout(function() {
-        markers.push(new google.maps.Marker({
-          position: position,
-          map: map,
-          animation: google.maps.Animation.DROP
-        }));
-        }, timeout);
-    };
-
-    self.clearMarkers = function() {
-        for (var i = 0; i < markers.length; i++) {
-            markers[i].setMap(null);
-        }
-        markers = [];
-    }*/
-
-
+    self.touristicAttractions = ko.computed(function(){
+        return ko.utils.arrayFilter(self.touristicAttractions(), function(attraction){
+          return attraction.title.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
+          attraction.marker.setVisible(match);
+          return match;
+        });
+    });
 
     // We can access clickedMarker.marker directly for each location
     self.setPlace = function(clickedMarker) {
@@ -176,8 +142,6 @@ var ViewModel = function() {
             self.touristicAttractions()[i].marker.setAnimation(null);
         }
         self.showInfoWindow(clickedMarker.marker, infowindow);
-
-
     };
 
     self.showInfoWindow = function(marker, infowindow) {

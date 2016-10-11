@@ -17,6 +17,13 @@ h2 {
     font-size: 20px;
 }
 
+h4 {
+    font-size: 16px;
+    color: gray;
+    font-weight: normal;
+    padding-left: 25px;
+}
+
 .title {
     font-weight: bold;
     color: red;
@@ -89,6 +96,10 @@ h2 {
 }
 
 /* Sidebar Styles */
+
+#search-box {
+    margin-left: 25px;
+}
 
 .list-sidebar {
     color: black;

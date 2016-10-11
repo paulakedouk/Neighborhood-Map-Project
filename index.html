@@ -8,25 +8,26 @@
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="./css/style.css" rel="stylesheet">
-    <link href="./css/filter.css" rel="stylesheet"><!--JQuery-->
-
-    <script src="js/jquery.js">
-    </script><!--Bower Libraries-->
-
-    <script src='js/knockout.js'>
-    </script>
+    <link href="./css/filter.css" rel="stylesheet">
+    <!--JQuery-->
+    <script src="js/jquery.js"></script>
+    <script src='js/knockout.js'></script>
 </head>
 <body>
     <div id="wrapper">
         <!-- Sidebar -->
         <div id="sidebar-wrapper">
             <h1 class="title">Places to go in San Francisco</h1>
+            <h4> Filter </h4>
+            <input id="search-box" type="search" data-bind="textInput: filter, valueUpdate: 'keyup'"></input>
             <hr>
-            <ul class="sidebar-nav" data-bind="foreach: touristicAttractions">
-                <li>
-                    <a class="list-sidebar" data-bind="text: title, click: $parent.setPlace"></a>
-                </li>
-            </ul>
+            <div>
+                <ul class="sidebar-nav" data-bind="foreach: touristicAttractions">
+                    <li>
+                        <a class="list-sidebar" data-bind="text: title, click: $parent.setPlace"></a>
+                    </li>
+                </ul>
+            </div>
             <ul class="sidebar-nav" id="sidebar-nav"></ul>
         </div><!-- Page Content -->
         <div id="map"></div>
@@ -40,17 +41,15 @@
                 </div>
             </div>
         </div>
-    </div><!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js">
-    </script> <!--Local project files-->
+    </div>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
 
-    <script src='js/map.js'>
-    </script>
+    <script src='js/map.js'></script>
     <script async defer src=
     "https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL8gNy9ObPAHD6wUrtKVZ_do05gJbezaQ&callback=initMap"
     type="text/javascript">
     </script> <!-- Menu Toggle Script -->
-
     <script>
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
