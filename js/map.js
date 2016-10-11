@@ -130,8 +130,6 @@ var ViewModel = function() {
     self.touristicAttractions = ko.computed(function(){
         return ko.utils.arrayFilter(self.touristicAttractions(), function(attraction){
           return attraction.title.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
-          attraction.marker.setVisible(match);
-          return match;
         });
     });
 
