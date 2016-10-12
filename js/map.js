@@ -129,9 +129,18 @@ var ViewModel = function() {
 
     self.touristicAttractions = ko.computed(function(){
         return ko.utils.arrayFilter(self.touristicAttractions(), function(attraction){
-          return attraction.title.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
+            var match = attraction.title.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
+            console.log(match);
+            if (match) {
+              // set encapsulated marker to be visible
+              attraction.marker.setVisible(true);
+            } else {
+              // otherwise set it to be false
+              attraction.marker.setVisible(false);
+            }
+            return match;
+            });
         });
-    });
 
     // We can access clickedMarker.marker directly for each location
     self.setPlace = function(clickedMarker) {
