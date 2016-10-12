@@ -22,7 +22,7 @@
             <input id="search-box" type="search" data-bind="textInput: filter, valueUpdate: 'keyup'"></input>
             <hr>
             <div>
-                <ul class="sidebar-nav" data-bind="foreach: touristicAttractions">
+                <ul class="sidebar-nav" data-bind="foreach: filteredAttractions">
                     <li>
                         <a class="list-sidebar" data-bind="text: title, click: $parent.setPlace"></a>
                     </li>

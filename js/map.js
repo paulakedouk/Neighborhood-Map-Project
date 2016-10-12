@@ -127,7 +127,7 @@ var ViewModel = function() {
         });
     }
 
-    self.touristicAttractions = ko.computed(function(){
+    self.filteredAttractions = ko.computed(function(){
         return ko.utils.arrayFilter(self.touristicAttractions(), function(attraction){
             var match = attraction.title.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
             console.log(match);
@@ -139,7 +139,7 @@ var ViewModel = function() {
               attraction.marker.setVisible(false);
             }
             return match;
-            });
+            } );
         });
 
     // We can access clickedMarker.marker directly for each location
