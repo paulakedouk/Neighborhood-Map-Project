@@ -6,46 +6,47 @@ var places = [
         content: 'Alcatraz Island is located in the San Francisco Bay, 1.25 miles offshore from San Francisco, California, United States.',
         location: {lat: 37.8270, lng: -122.4230},
         image: 'img/alcatraz.jpg',
-        wiki: 'Alcatraz_Island',
+        link: 'Alcatraz_Island',
         visible: true
     },{
         title: "Fisherman's Wharf",
         content:"Fisherman's Wharf is a neighborhood and popular tourist attraction in San Francisco, California. It roughly encompasses the northern waterfront area of San Francisco from Ghirardelli Square or Van Ness Avenue east to Pier 35 or Kearny Street.",
         location: {lat: 37.8080, lng: -122.4177},
         image: 'img/fishermans.jpg',
-        wiki:'Fisherman%27s_Wharf,_San_Francisco',
+        link:'Fisherman%27s_Wharf,_San_Francisco',
         visible: true
     },{
         title: 'Golden Gate Bridge',
         content:'The Golden Gate Bridge is a suspension bridge spanning the Golden Gate strait, the one-mile-wide, three-mile-long channel between San Francisco Bay and the Pacific Ocean.',
         location: {lat: 37.8199, lng: -122.4783},
         image: 'img/goldengate.jpg',
-        wiki:'Golden_Gate_Bridge',
+        link:'Golden_Gate_Bridge',
         visible: true
     },{
         title: 'Union Square',
         content:'Union Square is a 2.6-acre public plaza bordered by Geary, Powell, Post and Stockton Streets in downtown San Francisco, California.',
         location: {lat: 37.7880, lng: -122.4074},
         image: 'img/unionsquare.jpg',
-        wiki:'Union_Square,_San_Francisco',
+        link:'Union_Square,_San_Francisco',
         visible: true
     },{
         title: 'Lombard Street',
         content:'Lombard Street is an east–west street in San Francisco, California that is famous for a steep, one-block section with eight hairpin turns.',
         location: {lat: 37.8021, lng: -122.4187},
         image: 'img/lombard.jpg',
-        wiki:'Lombard_Street_(San_Francisco)',
+        link:'Lombard_Street_(San_Francisco)',
         visible: true
     },{
         title: 'Embarcadero',
         content:'The Embarcadero is the eastern waterfront and roadway of the Port of San Francisco, San Francisco, California, along San Francisco Bay.',
         location: {lat: 37.7993, lng: -122.3977},
         image: 'img/embarcadero.jpg',
-        wiki:'Embarcadero_(San_Francisco)',
+        link:'Embarcadero_(San_Francisco)',
         visible: true
     }];
 
 var map;
+var infoWindowHTML;
 
 // Initiate the map
 function initMap() {
@@ -106,7 +107,7 @@ var ViewModel = function() {
         var image = places[i].image;
         var title = places[i].title;
         var content = places[i].content;
-        var wiki = places[i].wiki;
+        var link = places[i].link;
         var visible = places[i].visible;
         // Create a marker per location, and put into markers array
         var marker = new google.maps.Marker({
@@ -116,7 +117,7 @@ var ViewModel = function() {
             title: title,
             content: content,
             visible: visible,
-            wiki: wiki,
+            link: '<br><a href='+ wikiUrl +'></a>',
             show: ko.observable(true),
             icon: imageMarker,
             animation: google.maps.Animation.DROP,
@@ -138,6 +139,30 @@ var ViewModel = function() {
             setTimeout(function(){
                 mark.setAnimation(null);
             }, 700);
+        });
+
+        var wikiUrl =  'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + self.touristicAttractions()[i].link + '&format=json&callback=wikiCallback';
+
+        //error handler for Wikipedia
+        var wikiRequestTimeout = setTimeout(function() {
+            infoWindowHTML = "Unable to connect to Wikipedia";
+            //self.setPlace(clickedMarker);
+        }, 8000);
+
+        $.ajax({
+            url: wikiUrl,
+            dataType: "jsonp",
+            //jsonp: "callback",
+            success: function(response) {
+                console.log(response);
+
+                var locationsList = response[1];
+                for (var i = 0; i < locationsList.length; i++) {
+                    locationsStr = locationsList[i];
+                    var url = 'http://en.wikipedia.org/wiki/' + locationsStr;
+                }
+                clearTimeout(wikiRequestTimeout);
+            }
         });
     }
 
@@ -172,7 +197,7 @@ var ViewModel = function() {
         // Check to make sure the infowindow is not already opened on this marker.
         if (infowindow.marker != marker) {
             infowindow.marker = marker;
-            infowindow.setContent("<img class='imageinfo' src=" + marker.image + ">" + '<h2>' + marker.title + '</h2>' + '<div class="content">' + marker.content + '</div>' + '<a href=" '+ self.wikiLink() +' " >More info</a>');
+            infowindow.setContent("<img class='imageinfo' src=" + marker.image + ">" + '<h2>' + marker.title + '</h2>' + '<div class="content">' + marker.content + '</div>' + '<a href="https://en.wikipedia.org/wiki/' + marker.link +' " >More info</a>');
             infowindow.open(map, marker);
             infowindow.marker.setAnimation(google.maps.Animation.BOUNCE);
 
@@ -181,32 +206,5 @@ var ViewModel = function() {
             }, 700);
         }
     };
-
-    self.wikiLink = function(marker) {
-        var wikiTitle = self.touristicAttractions().wiki;
-        var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + wikiTitle + '&format=json&callback=wikiCallback';
-        var wikiRequestTimeout = setTimeout(function() {
-           alert ("Unfortunately, Wikipedia is unavailable. Please try again later.");
-         }, 5000);
-
-        $.ajax({
-            url: wikiUrl,
-            dataType: "jsonp",
-            //jsonp: "callback",
-            success: function(response) {
-                var locationsList = response[1];
-                for (var i = 0; i < locationsList.length; i++) {
-                    locationsStr = locationsList[i];
-                    var url = 'http://en.wikipedia.org/wiki/' + locationsStr;
-                }
-            }
-        });
-        clearTimeout(wikiRequestTimeout);
-    };
-
-    self.googleError = function() {
-    alert("Google Maps has failed to load. Please check your internet connection and try again.");
-    };
-
 };
 
