@@ -4,15 +4,18 @@
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1" name="viewport">
+
     <title>Best places to go in San Francisco</title>
+
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="./css/style.css" rel="stylesheet">
     <link href="./css/filter.css" rel="stylesheet">
-    <!--JQuery-->
+
     <script src="js/jquery.js"></script>
     <script src='js/knockout.js'></script>
 </head>
+
 <body>
     <div id="wrapper">
         <!-- Sidebar -->
@@ -28,8 +31,8 @@
                     </li>
                 </ul>
             </div>
-            <ul class="sidebar-nav" id="sidebar-nav"></ul>
-        </div><!-- Page Content -->
+        </div>
+        <!-- Page Content -->
         <div id="map"></div>
         <div id="page-content-wrapper">
             <div class="container-fluid">
@@ -47,9 +50,8 @@
 
     <script src='js/map.js'></script>
     <script async defer src=
-    "https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL8gNy9ObPAHD6wUrtKVZ_do05gJbezaQ&callback=initMap"
-    type="text/javascript">
-    </script> <!-- Menu Toggle Script -->
+    "https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL8gNy9ObPAHD6wUrtKVZ_do05gJbezaQ&callback=initMap" onerror="googleError()"></script>
+    <!-- Menu Toggle Script -->
     <script>
         $("#menu-toggle").click(function(e) {
             e.preventDefault();
