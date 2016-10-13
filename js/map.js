@@ -141,12 +141,12 @@ var ViewModel = function() {
             }, 700);
         });
 
-        var wikiUrl =  'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + self.touristicAttractions()[i].link + '&format=json&callback=wikiCallback';
+        var linkPlaces = self.touristicAttractions()[i].link;
+        var wikiUrl =  'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + linkPlaces + '&format=json&callback=wikiCallback';
 
-        //error handler for Wikipedia
+        // Error handler for Wikipedia
         var wikiRequestTimeout = setTimeout(function() {
-            infoWindowHTML = "Unable to connect to Wikipedia";
-            //self.setPlace(clickedMarker);
+            linkPlaces.text = "Unable to connect to Wikipedia";
         }, 8000);
 
         $.ajax({
@@ -154,7 +154,7 @@ var ViewModel = function() {
             dataType: "jsonp",
             //jsonp: "callback",
             success: function(response) {
-                console.log(response);
+                //console.log(response);
 
                 var locationsList = response[1];
                 for (var i = 0; i < locationsList.length; i++) {
