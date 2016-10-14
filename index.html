@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head>
+<header>
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta content="width=device-width, initial-scale=1" name="viewport">
@@ -11,51 +11,49 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="./css/style.css" rel="stylesheet">
     <link href="./css/filter.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="img/favicon.png">
 
-    <script src="js/jquery.js"></script>
-    <script src='js/knockout.js'></script>
-</head>
+</header>
 
 <body>
-    <div id="wrapper">
+    <main id="wrapper">
         <!-- Sidebar -->
-        <div id="sidebar-wrapper">
-            <h1 class="title">Places to go in San Francisco</h1>
-            <h4> Filter </h4>
-            <input id="search-box" type="search" data-bind="textInput: filter, valueUpdate: 'keyup'"></input>
-            <hr>
-            <div>
-                <ul class="sidebar-nav" data-bind="foreach: filteredAttractions">
-                    <li>
-                        <a class="list-sidebar" data-bind="text: title, click: $parent.setPlace"></a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        <aside id="sidebar-wrapper">
+            <section>
+                <h1 class="title">Places to go in San Francisco</h1>
+                <form action="">
+                    <h4> Filter </h4>
+                    <input id="search-box" type="search" data-bind="textInput: filter, valueUpdate: 'keyup'">
+                    <input type="submit" value="Reset">
+                </form>
+                <hr>
+                <nav>
+                    <ul class="sidebar-nav" data-bind="foreach: filteredAttractions">
+                        <li>
+                            <a class="list-sidebar" data-bind="text: title, click: $parent.setPlace"></a>
+                        </li>
+                    </ul>
+                </nav>
+            </section>
+        </aside>
         <!-- Page Content -->
         <div id="map"></div>
         <div id="page-content-wrapper">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-12">
-                        <a class="btn btn-default" href="#menu-toggle" id=
-                        "menu-toggle">Filter places</a>
+                        <button id="menu-toggle" class="btn btn-default" name="button" href="#menu-toggle">Filter places</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+    <script src="js/jquery.js"></script>
+    <script src='js/knockout.js'></script>
     <!-- Bootstrap Core JavaScript -->
     <script src="js/bootstrap.min.js"></script>
 
     <script src='js/map.js'></script>
     <script onerror="googleError()" src="https://maps.googleapis.com/maps/api/js?v=3&key=AIzaSyAL8gNy9ObPAHD6wUrtKVZ_do05gJbezaQ&callback=initMap" async defer></script>
-    <!-- Menu Toggle Script -->
-    <script>
-        $("#menu-toggle").click(function(e) {
-            e.preventDefault();
-            $("#wrapper").toggleClass("toggled");
-        });
-    </script>
 </body>
 </html>

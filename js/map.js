@@ -207,6 +207,12 @@ var ViewModel = function() {
     };
 };
 
+// Menu Toggle Script
+$("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+        });
+
 // Error handling for the Google Map api. This will pop up alert advising user that map is unavailable.
     var googleError = function() {
         alert('Unfortunately, Google Maps is currently unavailable.');
