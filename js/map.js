@@ -45,8 +45,7 @@ var places = [
         visible: true
     }];
 
-var map;
-var infoWindowHTML;
+var map, googleError;
 
 // Initiate the map
 function initMap() {
@@ -117,7 +116,7 @@ var ViewModel = function() {
             title: title,
             content: content,
             visible: visible,
-            link: '<br><a href='+ wikiUrl +'></a>',
+            link: link,
             show: ko.observable(true),
             icon: imageMarker,
             animation: google.maps.Animation.DROP,
@@ -207,4 +206,9 @@ var ViewModel = function() {
         }
     };
 };
+
+// Error handling for the Google Map api. This will pop up alert advising user that map is unavailable.
+    var googleError = function() {
+        alert('Unfortunately, Google Maps is currently unavailable.');
+    };
 
