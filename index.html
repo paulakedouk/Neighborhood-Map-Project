@@ -23,7 +23,7 @@
                 <h1 class="title">Places to go in San Francisco</h1>
                 <form action="">
                     <h4> Filter </h4>
-                    <input id="search-box" type="search" data-bind="textInput: filter, valueUpdate: 'keyup'">
+                    <input id="search-box" type="search" data-bind="textInput: filter">
                     <input type="submit" value="Reset">
                 </form>
                 <hr>
@@ -42,7 +42,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-12">
-                        <button id="menu-toggle" class="btn btn-default" name="button" href="#menu-toggle">Filter places</button>
+                        <a class="btn btn-default" href="#menu-toggle" id="menu-toggle">Filter places</a>
                     </div>
                 </div>
             </div>

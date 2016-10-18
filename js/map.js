@@ -3,47 +3,42 @@
 var places = [
     {
         title: 'Alcatraz',
-        content: 'Alcatraz Island is located in the San Francisco Bay, 1.25 miles offshore from San Francisco, California, United States.',
-        location: {lat: 37.8270, lng: -122.4230},
-        image: 'img/alcatraz.jpg',
-        link: 'Alcatraz_Island',
+        lat: 37.8270,
+        lng: -122.4230,
+        myData: '',
         visible: true
     },{
         title: "Fisherman's Wharf",
-        content:"Fisherman's Wharf is a neighborhood and popular tourist attraction in San Francisco, California. It roughly encompasses the northern waterfront area of San Francisco from Ghirardelli Square or Van Ness Avenue east to Pier 35 or Kearny Street.",
-        location: {lat: 37.8080, lng: -122.4177},
-        image: 'img/fishermans.jpg',
-        link:'Fisherman%27s_Wharf,_San_Francisco',
+        lat: 37.8080,
+        lng: -122.4177,
+        myData: '',
         visible: true
     },{
         title: 'Golden Gate Bridge',
-        content:'The Golden Gate Bridge is a suspension bridge spanning the Golden Gate strait, the one-mile-wide, three-mile-long channel between San Francisco Bay and the Pacific Ocean.',
-        location: {lat: 37.8199, lng: -122.4783},
-        image: 'img/goldengate.jpg',
-        link:'Golden_Gate_Bridge',
+        lat: 37.8199,
+        lng: -122.4783,
+        myData: '',
         visible: true
     },{
         title: 'Union Square',
-        content:'Union Square is a 2.6-acre public plaza bordered by Geary, Powell, Post and Stockton Streets in downtown San Francisco, California.',
-        location: {lat: 37.7880, lng: -122.4074},
-        image: 'img/unionsquare.jpg',
-        link:'Union_Square,_San_Francisco',
+        lat: 37.7880,
+        lng: -122.4074,
+        myData: '',
         visible: true
     },{
         title: 'Lombard Street',
-        content:'Lombard Street is an east–west street in San Francisco, California that is famous for a steep, one-block section with eight hairpin turns.',
-        location: {lat: 37.8021, lng: -122.4187},
-        image: 'img/lombard.jpg',
-        link:'Lombard_Street_(San_Francisco)',
+        lat: 37.8021,
+        lng: -122.4187,
+        myData: '',
         visible: true
     },{
         title: 'Embarcadero',
-        content:'The Embarcadero is the eastern waterfront and roadway of the Port of San Francisco, San Francisco, California, along San Francisco Bay.',
-        location: {lat: 37.7993, lng: -122.3977},
-        image: 'img/embarcadero.jpg',
-        link:'Embarcadero_(San_Francisco)',
+        lat: 37.7993,
+        lng: -122.3977,
+        myData: '',
         visible: true
-    }];
+    }
+];
 
 var map, googleError;
 
@@ -92,7 +87,23 @@ function initMap() {
 var ViewModel = function() {
     var self = this;
 
-    self.markers = [];
+    var Pointer = function (map, title, lat, lng, location, myData) {
+        this.title = ko.observable(title);
+        this.lat = ko.observable(lat);
+        this.lng = ko.observable(lng);
+        this.myData = ko.observable(myData);
+
+        this.marker = new google.maps.Marker({
+            map: map,
+            position: new google.maps.LatLng(lat, lng),
+            icon: imageMarker,
+            animation: google.maps.Animation.DROP,
+        });
+    };
+
+    google.maps.event.addListener(map, 'click', function() {
+        infowindow.close();
+    });
 
     self.touristicAttractions = ko.observableArray(places);
 
@@ -100,35 +111,22 @@ var ViewModel = function() {
 
     imageMarker = 'img/marker.png';
 
-    for (var i = 0; i < places.length; i++){
+    for (i = 0; i < places.length; i++){
         // Get the position from the location array
-        var position = places[i].location;
-        var image = places[i].image;
-        var title = places[i].title;
-        var content = places[i].content;
-        var link = places[i].link;
-        var visible = places[i].visible;
-        // Create a marker per location, and put into markers array
-        var marker = new google.maps.Marker({
-            map: map,
-            position: position,
-            image: image,
-            title: title,
-            content: content,
-            visible: visible,
-            link: link,
-            show: ko.observable(true),
-            icon: imageMarker,
-            animation: google.maps.Animation.DROP,
-            id: i
-        });
+        self.touristicAttractions()[i].pointer = new Pointer (map, self.touristicAttractions()[i].title, self.touristicAttractions()[i].lat, self.touristicAttractions()[i].lng, self.touristicAttractions()[i].myData);
 
-        // Push the marker to our array of markers
-        self.touristicAttractions()[i].marker = marker;
+        var content = self.touristicAttractions()[i].pointer.myData;
+        var heading = self.touristicAttractions()[i].pointer.title();
+
+        marker = self.touristicAttractions()[i].pointer.marker;
+
+
 
         // Show infowindow when it receives the click
-        marker.addListener('click', function() {
+        marker.addListener('click', function(pointer) {
+            infowindow.open(map, pointer.marker);
             self.showInfoWindow(this, infowindow);
+            self.getWiki(heading, infowindow);
         });
 
         // Animate marker when map marker is clicked on
@@ -139,31 +137,35 @@ var ViewModel = function() {
                 mark.setAnimation(null);
             }, 700);
         });
+    }
 
-        var linkPlaces = self.touristicAttractions()[i].link;
+    self.markers = [];
+
+    self.getWiki = function(heading, infowindow) {
+        var linkPlaces = heading;
         var wikiUrl =  'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + linkPlaces + '&format=json&callback=wikiCallback';
 
-        // Error handler for Wikipedia
         var wikiRequestTimeout = setTimeout(function() {
-            linkPlaces.text = "Unable to connect to Wikipedia";
-        }, 8000);
+            $wikiElem.text("Failed to get wikipedia resources");
+        },8000);
+
 
         $.ajax({
-            url: wikiUrl,
-            dataType: "jsonp",
-            //jsonp: "callback",
-            success: function(response) {
-                //console.log(response);
+        url: wikiUrl,
+        dataType: "jsonp",
+        // ajax settings
+            success: function (response) {
+                console.log(response);
+                var articleStr = response[0];
+                var url = 'http://en.wikipedia.org/wiki/' + articleStr;
 
-                var locationsList = response[1];
-                for (var i = 0; i < locationsList.length; i++) {
-                    locationsStr = locationsList[i];
-                    var url = 'http://en.wikipedia.org/wiki/' + locationsStr;
-                }
-                clearTimeout(wikiRequestTimeout);
+                content = url;
+                infowindow.setContent('<h2>' + linkPlaces + '</h2>' + '<a class="content" href="' + content + '">' + 'Wikipedia Link to ' +
+                      linkPlaces + '</a>');
             }
         });
-    }
+        clearTimeout(wikiRequestTimeout);
+    };
 
     // Filter the listview based on the search keywords
     self.filteredAttractions = ko.computed(function(){
@@ -173,13 +175,14 @@ var ViewModel = function() {
             // console.log(match);
             if (match) {
               // set encapsulated marker to be visible
-              attraction.marker.setVisible(match);
+              attraction.pointer.marker.setVisible(match);
+              //self.filter.push(attraction);
             } else {
               // otherwise set it to be false
-              attraction.marker.setVisible(match);
+              attraction.pointer.marker.setVisible(match);
             }
             return match;
-            } );
+            });
         });
 
     // Open the infowindow and animate on each marker
@@ -214,7 +217,7 @@ $("#menu-toggle").click(function(e) {
         });
 
 // Error handling for the Google Map api. This will pop up alert advising user that map is unavailable.
-    var googleError = function() {
-        alert('Unfortunately, Google Maps is currently unavailable.');
-    };
+var googleError = function() {
+    alert('Unfortunately, Google Maps is currently unavailable.');
+};
 
