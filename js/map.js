@@ -3,42 +3,41 @@
 var places = [
     {
         title: 'Alcatraz',
-        lat: 37.8270,
-        lng: -122.4230,
-        myData: '',
+        location: {lat: 37.8270, lng: -122.4230},
+        image: 'img/alcatraz.jpg',
+        link: 'Alcatraz_Island',
         visible: true
     },{
         title: "Fisherman's Wharf",
-        lat: 37.8080,
-        lng: -122.4177,
-        myData: '',
+        location: {lat: 37.8080, lng: -122.4177},
+        image: 'img/fishermans.jpg',
+        link:'Fisherman%27s_Wharf,_San_Francisco',
         visible: true
     },{
         title: 'Golden Gate Bridge',
-        lat: 37.8199,
-        lng: -122.4783,
-        myData: '',
+        location: {lat: 37.8199, lng: -122.4783},
+        image: 'img/goldengate.jpg',
+        link:'Golden_Gate_Bridge',
         visible: true
     },{
         title: 'Union Square',
-        lat: 37.7880,
-        lng: -122.4074,
-        myData: '',
+        location: {lat: 37.7880, lng: -122.4074},
+        image: 'img/unionsquare.jpg',
+        link:'Union_Square,_San_Francisco',
         visible: true
     },{
         title: 'Lombard Street',
-        lat: 37.8021,
-        lng: -122.4187,
-        myData: '',
+        location: {lat: 37.8021, lng: -122.4187},
+        image: 'img/lombard.jpg',
+        link:'Lombard_Street_(San_Francisco)',
         visible: true
     },{
         title: 'Embarcadero',
-        lat: 37.7993,
-        lng: -122.3977,
-        myData: '',
+        location: {lat: 37.7993, lng: -122.3977},
+        image: 'img/embarcadero.jpg',
+        link:'Embarcadero_(San_Francisco)',
         visible: true
-    }
-];
+    }];
 
 var map, googleError;
 
@@ -76,9 +75,9 @@ function initMap() {
         mapTypeId: google.maps.MapTypeId.TERRAIN
     });
 
-    infowindow = new google.maps.InfoWindow({
-        maxWidth: 200
-    });
+    // infowindow = new google.maps.InfoWindow({
+    //     maxWidth: 200
+    // });
 
     ko.applyBindings(new ViewModel());
 }
@@ -87,23 +86,7 @@ function initMap() {
 var ViewModel = function() {
     var self = this;
 
-    var Pointer = function (map, title, lat, lng, location, myData) {
-        this.title = ko.observable(title);
-        this.lat = ko.observable(lat);
-        this.lng = ko.observable(lng);
-        this.myData = ko.observable(myData);
-
-        this.marker = new google.maps.Marker({
-            map: map,
-            position: new google.maps.LatLng(lat, lng),
-            icon: imageMarker,
-            animation: google.maps.Animation.DROP,
-        });
-    };
-
-    google.maps.event.addListener(map, 'click', function() {
-        infowindow.close();
-    });
+    self.markers = [];
 
     self.touristicAttractions = ko.observableArray(places);
 
@@ -111,22 +94,35 @@ var ViewModel = function() {
 
     imageMarker = 'img/marker.png';
 
-    for (i = 0; i < places.length; i++){
+    for (var i = 0; i < places.length; i++){
         // Get the position from the location array
-        self.touristicAttractions()[i].pointer = new Pointer (map, self.touristicAttractions()[i].title, self.touristicAttractions()[i].lat, self.touristicAttractions()[i].lng, self.touristicAttractions()[i].myData);
+        var position = places[i].location;
+        var image = places[i].image;
+        var link = places[i].link;
+        var visible = places[i].visible;
+        // Create a marker per location, and put into markers array
+        var marker = new google.maps.Marker({
+            map: map,
+            position: position,
+            image: image,
+            visible: visible,
+            link: link,
+            show: ko.observable(true),
+            icon: imageMarker,
+            animation: google.maps.Animation.DROP,
+            id: i
+        });
 
-        var content = self.touristicAttractions()[i].pointer.myData;
-        var heading = self.touristicAttractions()[i].pointer.title();
+        var infowindow = new google.maps.InfoWindow({
+            maxWidth: 220
+        });
 
-        marker = self.touristicAttractions()[i].pointer.marker;
-
-
+        // Push the marker to our array of markers
+        self.touristicAttractions()[i].marker = marker;
 
         // Show infowindow when it receives the click
-        marker.addListener('click', function(pointer) {
-            infowindow.open(map, pointer.marker);
+        marker.addListener('click', function() {
             self.showInfoWindow(this, infowindow);
-            self.getWiki(heading, infowindow);
         });
 
         // Animate marker when map marker is clicked on
@@ -137,52 +133,49 @@ var ViewModel = function() {
                 mark.setAnimation(null);
             }, 700);
         });
-    }
 
-    self.markers = [];
+        var titleLink = self.touristicAttractions()[i].link;
+        var wikiUrl =  'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + titleLink + '&format=json&callback=wikiCallback';
 
-    self.getWiki = function(heading, infowindow) {
-        var linkPlaces = heading;
-        var wikiUrl =  'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + linkPlaces + '&format=json&callback=wikiCallback';
-
+        // Error handler for Wikipedia
         var wikiRequestTimeout = setTimeout(function() {
-            $wikiElem.text("Failed to get wikipedia resources");
-        },8000);
+            titleLink.text = "Unable to connect to Wikipedia";
+        }, 8000);
 
+        (function(marker) {
+            $.ajax({
+                url: wikiUrl,
+                type: "GET",
+                dataType: "jsonp",
+                //jsonp: "callback",
+                success: function(response) {
+                    console.log(response);
+                    marker.title = response[1][0];
+                    marker.titleLink = response[0];
+                    marker.content = response[2][0];
+                    marker.link = response[3][0];
 
-        $.ajax({
-        url: wikiUrl,
-        dataType: "jsonp",
-        // ajax settings
-            success: function (response) {
-                console.log(response);
-                var articleStr = response[0];
-                var url = 'http://en.wikipedia.org/wiki/' + articleStr;
-
-                content = url;
-                infowindow.setContent('<h2>' + linkPlaces + '</h2>' + '<a class="content" href="' + content + '">' + 'Wikipedia Link to ' +
-                      linkPlaces + '</a>');
-            }
-        });
-        clearTimeout(wikiRequestTimeout);
-    };
+                }
+            });
+            clearTimeout(wikiRequestTimeout);
+        })(marker);
+    }
 
     // Filter the listview based on the search keywords
     self.filteredAttractions = ko.computed(function(){
-         // Filter the touristicAttractions() array using a function that calls each attraction
+        // Filter the touristicAttractions() array using a function that calls each attraction
         return ko.utils.arrayFilter(self.touristicAttractions(), function(attraction){
             var match = attraction.title.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
             // console.log(match);
             if (match) {
               // set encapsulated marker to be visible
-              attraction.pointer.marker.setVisible(match);
-              //self.filter.push(attraction);
+              attraction.marker.setVisible(match);
             } else {
               // otherwise set it to be false
-              attraction.pointer.marker.setVisible(match);
+              attraction.marker.setVisible(match);
             }
             return match;
-            });
+            } );
         });
 
     // Open the infowindow and animate on each marker
@@ -199,8 +192,10 @@ var ViewModel = function() {
         // Check to make sure the infowindow is not already opened on this marker.
         if (infowindow.marker != marker) {
             infowindow.marker = marker;
-            infowindow.setContent("<img class='imageinfo' src=" + marker.image + ">" + '<h2>' + marker.title + '</h2>' + '<div class="content">' + marker.content + '</div>' + '<a href="https://en.wikipedia.org/wiki/' + marker.link +' " >More info</a>');
+            infowindow.setContent("<img class='imageinfo' src=" + marker.image + ">" + '<h2>' + marker.title +  '</h2>' + '<div class="content">' + marker.content + '</div>' + '<a href="' + marker.link +' " >More info</a>');
+
             infowindow.open(map, marker);
+
             infowindow.marker.setAnimation(google.maps.Animation.BOUNCE);
 
             setTimeout(function(){
@@ -217,7 +212,6 @@ $("#menu-toggle").click(function(e) {
         });
 
 // Error handling for the Google Map api. This will pop up alert advising user that map is unavailable.
-var googleError = function() {
-    alert('Unfortunately, Google Maps is currently unavailable.');
-};
-
+    var googleError = function() {
+        alert('Unfortunately, Google Maps is currently unavailable.');
+    };
