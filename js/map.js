@@ -39,7 +39,7 @@ var places = [
         visible: true
     }];
 
-var map, googleError;
+var map;
 
 // Initiate the map
 function initMap() {
@@ -75,12 +75,10 @@ function initMap() {
         mapTypeId: google.maps.MapTypeId.TERRAIN
     });
 
-    // infowindow = new google.maps.InfoWindow({
-    //     maxWidth: 200
-    // });
-
     ko.applyBindings(new ViewModel());
 }
+
+
 
 // ViewModel
 var ViewModel = function() {
@@ -94,27 +92,31 @@ var ViewModel = function() {
 
     imageMarker = 'img/marker.png';
 
+    var infowindow = new google.maps.InfoWindow({
+        maxWidth: 220
+    });
+
     for (var i = 0; i < places.length; i++){
         // Get the position from the location array
         var position = places[i].location;
+        var title = places[i].title;
         var image = places[i].image;
         var link = places[i].link;
         var visible = places[i].visible;
+
         // Create a marker per location, and put into markers array
         var marker = new google.maps.Marker({
             map: map,
             position: position,
+            title: title,
             image: image,
+            infowindow: infowindow,
             visible: visible,
             link: link,
             show: ko.observable(true),
             icon: imageMarker,
             animation: google.maps.Animation.DROP,
             id: i
-        });
-
-        var infowindow = new google.maps.InfoWindow({
-            maxWidth: 220
         });
 
         // Push the marker to our array of markers
@@ -149,7 +151,7 @@ var ViewModel = function() {
                 dataType: "jsonp",
                 //jsonp: "callback",
                 success: function(response) {
-                    console.log(response);
+                    //console.log(response);
                     marker.title = response[1][0];
                     marker.titleLink = response[0];
                     marker.content = response[2][0];
@@ -157,22 +159,24 @@ var ViewModel = function() {
 
                 }
             });
-            clearTimeout(wikiRequestTimeout);
         })(marker);
+        clearTimeout(wikiRequestTimeout);
     }
 
     // Filter the listview based on the search keywords
     self.filteredAttractions = ko.computed(function(){
+
         // Filter the touristicAttractions() array using a function that calls each attraction
         return ko.utils.arrayFilter(self.touristicAttractions(), function(attraction){
-            var match = attraction.title.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
-            // console.log(match);
+            var match = attraction.marker.title.toLowerCase().indexOf(self.filter().toLowerCase()) >= 0;
+            //console.log(match);
             if (match) {
               // set encapsulated marker to be visible
               attraction.marker.setVisible(match);
             } else {
               // otherwise set it to be false
               attraction.marker.setVisible(match);
+              attraction.marker.infowindow.close();
             }
             return match;
             } );
@@ -212,6 +216,6 @@ $("#menu-toggle").click(function(e) {
         });
 
 // Error handling for the Google Map api. This will pop up alert advising user that map is unavailable.
-    var googleError = function() {
-        alert('Unfortunately, Google Maps is currently unavailable.');
-    };
+var googleError = function() {
+    alert('Unfortunately, Google Maps is currently unavailable.');
+};
