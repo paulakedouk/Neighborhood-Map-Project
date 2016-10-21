@@ -40,6 +40,7 @@ var places = [
     }];
 
 var map;
+document.getElementById("error").style.display = 'none';
 
 // Initiate the map
 function initMap() {
@@ -139,28 +140,22 @@ var ViewModel = function() {
         var titleLink = self.touristicAttractions()[i].link;
         var wikiUrl =  'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + titleLink + '&format=json&callback=wikiCallback';
 
-        // Error handler for Wikipedia
-        var wikiRequestTimeout = setTimeout(function() {
-            titleLink.text = "Unable to connect to Wikipedia";
-        }, 8000);
-
         (function(marker) {
             $.ajax({
                 url: wikiUrl,
                 type: "GET",
-                dataType: "jsonp",
-                //jsonp: "callback",
-                success: function(response) {
-                    //console.log(response);
+                dataType: "jsonp"
+            }).done(function(response, textStatus) {/* this fn will run on success */
                     marker.title = response[1][0];
                     marker.titleLink = response[0];
                     marker.content = response[2][0];
                     marker.link = response[3][0];
 
-                }
-            });
+                }).fail(function(error, textStatus) {/* this fn will run on fail */
+                    // console.log(textStatus);
+                    document.getElementById("error").style.display = 'block';
+                });
         })(marker);
-        clearTimeout(wikiRequestTimeout);
     }
 
     // Filter the listview based on the search keywords

@@ -97,6 +97,13 @@ h4 {
     margin-left: 25px;
 }
 
+.error {
+    background-color: red;
+    padding: 5px;
+    margin: 10px;
+    text-align: center;
+}
+
 .list-sidebar {
     color: black;
 }
